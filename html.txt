@@ -1,0 +1,174 @@
+<html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Dependencia Emocional</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .option {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option.selected {
+            background-color: #4CAF50;
+            color: white;
+        }
+        #submitBtn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        #submitBtn:hover {
+            background-color: #1976D2;
+        }
+        #results {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .result-text {
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
+        .low { color: #4CAF50; }
+        .moderate { color: #FFC107; }
+        .high { color: #FF9800; }
+        .very-high { color: #F44336; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test de Dependencia Emocional</h1>
+        <form id="testForm">
+            <div id="questions"></div>
+            <button type="button" id="submitBtn" onclick="calculateResults()">Ver Resultados</button>
+        </form>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const questions = [
+            "¿Sientes ansiedad cuando no recibes respuesta inmediata de tu pareja o amigos a tus mensajes o llamadas?",
+            "¿Has dejado de realizar actividades que te gustaban para dedicar más tiempo a tu pareja o amigos?",
+            "¿Te resulta difícil tomar decisiones sin consultar antes con otras personas?",
+            "¿Sientes un miedo intenso a que las personas importantes en tu vida te abandonen?",
+            "¿Te cuesta estar solo/a y necesitas constantemente la compañía de alguien?",
+            "¿Sueles anteponer las necesidades y deseos de otros antes que los tuyos propios?",
+            "¿Te adaptas excesivamente a lo que otros quieren para evitar conflictos o rechazo?",
+            "¿Sientes que tu estado de ánimo depende mucho de cómo te traten los demás?",
+            "¿Te cuesta expresar desacuerdos con otros por miedo a perder su aprecio?",
+            "¿Tiendes a idealizar a las personas importantes en tu vida, ignorando sus defectos?"
+        ];
+
+        // Generar preguntas
+        const questionsDiv = document.getElementById('questions');
+        questions.forEach((question, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `
+                <p><strong>${index + 1}.</strong> ${question}</p>
+                <div class="options">
+                    ${[1,2,3,4,5].map(value => `
+                        <button type="button" 
+                                class="option" 
+                                onclick="selectOption(${index}, ${value}, this)">
+                            ${value}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+            questionsDiv.appendChild(questionDiv);
+        });
+
+        const answers = new Array(questions.length).fill(null);
+
+        function selectOption(questionIndex, value, button) {
+            // Desseleccionar todos los botones de la pregunta
+            const options = button.parentElement.getElementsByClassName('option');
+            Array.from(options).forEach(opt => opt.classList.remove('selected'));
+            
+            // Seleccionar el botón clickeado
+            button.classList.add('selected');
+            
+            // Guardar la respuesta
+            answers[questionIndex] = value;
+        }
+
+        function calculateResults() {
+            // Verificar que todas las preguntas están respondidas
+            if (answers.includes(null)) {
+                alert('Por favor responde todas las preguntas');
+                return;
+            }
+
+            const total = answers.reduce((sum, value) => sum + value, 0);
+            const resultsDiv = document.getElementById('results');
+            
+            let level, description, colorClass;
+            if (total <= 20) {
+                level = "10-20 puntos: Nivel bajo de dependencia emocional";
+                description = "Muestras una buena autonomía emocional.";
+                colorClass = "low";
+            } else if (total <= 30) {
+                level = "21-30 puntos: Nivel moderado de dependencia emocional";
+                description = "Algunos aspectos podrían necesitar atención.";
+                colorClass = "moderate";
+            } else if (total <= 40) {
+                level = "31-40 puntos: Nivel alto de dependencia emocional";
+                description = "Sería recomendable buscar apoyo profesional.";
+                colorClass = "high";
+            } else {
+                level = "41-50 puntos: Nivel muy alto de dependencia emocional";
+                description = "Es importante buscar ayuda profesional lo antes posible.";
+                colorClass = "very-high";
+            }
+
+            resultsDiv.innerHTML = `
+                <h2>Resultados:</h2>
+                <p><strong>Puntuación total:</strong> ${total}/50</p>
+                <p class="${colorClass} result-text"><strong>${level}</strong></p>
+                <p class="result-text">${description}</p>
+                <p><em>Nota: Este test es orientativo y no sustituye una evaluación profesional. 
+                Si tienes preocupaciones sobre tu bienestar emocional, consulta con un profesional de la salud mental.</em></p>
+            `;
+            resultsDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
